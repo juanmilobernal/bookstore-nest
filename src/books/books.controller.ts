@@ -1,32 +1,56 @@
-import { Controller, Get, Param, Post, Body, Query, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, Get, Param, NotFoundException, Delete, Query, Put } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDTO } from './dto/create-book.dto';
 
+
 @Controller('books')
 export class BooksController {
-    constructor(private booksService: BooksService) { }
+    constructor(private readonly booksService: BooksService) { }
+    
+    @Post('/create')
+    async create(@Res() res, @Body() createBookDTO: CreateBookDTO) {
+        const book = await this.booksService.createBook(createBookDTO);
+        return res.status(HttpStatus.OK).json({
+            message: 'Book created succesfully!',
+            book
+        });
+    }
 
-    @Get()
-    async getBooks() {
+    @Get('/')
+    async getBooks(@Res() res){
         const books = await this.booksService.getBooks();
-        return books;
+        return res.status(HttpStatus.OK).json({
+            books
+        });
     }
 
-    @Get(':bookID')
-    async getBook(@Param('bookID') bookID) {
-        const book = await this.booksService.getBook(bookID);
-        return book;
+    @Get('/:bookId')
+    async getBook(@Res() res, @Param('bookId')bookId){
+        const book = await this.booksService.getBook(bookId);
+        if (!book) throw new NotFoundException ('Book Does not exist');
+        return res.status(HttpStatus.OK).json({
+            book
+        });
     }
 
-    @Post()
-    async addBook(@Body() createBookDTO: CreateBookDTO) {
-        const book = await this.booksService.addBook(createBookDTO);
-        return book;
+    @Delete('/delete')
+    async deleteBook(@Res() res, @Query('bookId') bookId){
+        const bookDeleted = await this.booksService.deletBook(bookId);
+        if (!bookDeleted) throw new NotFoundException('Book Does not exist');
+        return res.status(HttpStatus.OK).json({
+            message: 'Book deleted succesfully',
+            bookDeleted
+        });
     }
 
-    @Delete()
-    async deleteBook(@Query() query) {
-        const books = await this.booksService.deleteBook(query.bookID);
-        return books;
+    @Put('/update')
+    async updateBook(@Res() res, @Body() createBookDTO: CreateBookDTO, @Query('bookId') bookId){
+        const updatedBook = await this.booksService.updateBook(bookId, createBookDTO);
+        if (!updatedBook) throw new NotFoundException('Book Does not exist');
+        return res.status(HttpStatus.OK).json({
+            message: 'Book updated succesfully',
+            updatedBook
+        });
     }
+
 }
