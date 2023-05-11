@@ -8,8 +8,9 @@ import { AuthorizationGuard } from 'src/authorization/authorization.guard';
 export class BooksController {
     constructor(private readonly booksService: BooksService) { }
     
-    @Post('/create')
+    @UseGuards(AuthorizationGuard)
     @UsePipes(new ValidationPipe())
+    @Post('/')
     async create(@Res() res, @Body() createBookDTO: CreateBookDTO) {
         const book = await this.booksService.createBook(createBookDTO);
         return res.status(HttpStatus.OK).json({
@@ -19,6 +20,7 @@ export class BooksController {
     }
 
     @UseGuards(AuthorizationGuard)
+    @UsePipes(new ValidationPipe)
     @Get('/')
     async getBooks(@Res() res){
         const books = await this.booksService.getBooks();
@@ -27,6 +29,8 @@ export class BooksController {
         });
     }
 
+    @UseGuards(AuthorizationGuard)
+    @UsePipes(new ValidationPipe)
     @Get('/:bookId')
     async getBook(@Res() res, @Param('bookId')bookId){
         const book = await this.booksService.getBook(bookId);
@@ -36,7 +40,9 @@ export class BooksController {
         });
     }
 
-    @Delete('/delete')
+    @UseGuards(AuthorizationGuard)
+    @UsePipes(new ValidationPipe)
+    @Delete('/')
     async deleteBook(@Res() res, @Query('bookId') bookId){
         const bookDeleted = await this.booksService.deletBook(bookId);
         if (!bookDeleted) throw new NotFoundException('Book Does not exist');
@@ -46,7 +52,9 @@ export class BooksController {
         });
     }
 
-    @Put('/update')
+    @UseGuards(AuthorizationGuard)
+    @UsePipes(new ValidationPipe)
+    @Put('/')
     async updateBook(@Res() res, @Body() createBookDTO: CreateBookDTO, @Query('bookId') bookId){
         const updatedBook = await this.booksService.updateBook(bookId, createBookDTO);
         if (!updatedBook) throw new NotFoundException('Book Does not exist');
