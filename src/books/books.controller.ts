@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, HttpStatus, Get, Param, NotFoundException, Delete, Query, Put, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Res, HttpStatus, Get, Param, NotFoundException, Delete, Query, Put, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDTO } from './dto/create-book.dto';
 import { AuthorizationGuard } from 'src/authorization/authorization.guard';
@@ -9,6 +9,7 @@ export class BooksController {
     constructor(private readonly booksService: BooksService) { }
     
     @Post('/create')
+    @UsePipes(new ValidationPipe())
     async create(@Res() res, @Body() createBookDTO: CreateBookDTO) {
         const book = await this.booksService.createBook(createBookDTO);
         return res.status(HttpStatus.OK).json({
