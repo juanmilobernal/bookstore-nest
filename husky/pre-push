@@ -1,2 +1,1 @@
-echo "Running pre-push script"
 npm run test
