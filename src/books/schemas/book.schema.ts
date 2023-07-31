@@ -1,8 +1,10 @@
-import mongoose from "mongoose";
+import { Schema, SchemaFactory } from '@nestjs/mongoose';
 
+@Schema()
+export class Book {
+  title: string;
+  description: string;
+  author: string;
+}
 
-export const BookSchema = new mongoose.Schema({
-    title: String,
-    description: String,
-    author: String,
-});
+export const BookSchema = SchemaFactory.createForClass(Book);
