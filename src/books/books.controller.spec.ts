@@ -46,6 +46,7 @@ describe('BooksController', () => {
       author: 'John Doe',
       description: 'Cualquiera'
     };
+
   });
   
   it('should create a book and return a response with status 200 and book information', async () => {
@@ -66,4 +67,23 @@ describe('BooksController', () => {
     });
     expect(booksService.createBook).toHaveBeenCalledWith(createBookDTO);
   });
+
+  it('should return books with status code 200', async () => {
+    const createdBook = { createBookDTO };
+    jest.spyOn(booksService, 'createBook').mockResolvedValue(createBookDTO);
+
+    const responseMock = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+    const res = responseMock;
+
+    // Act
+    await booksController.getBooks(res);
+
+    // Assert
+    expect(responseMock.status).toHaveBeenCalledWith(HttpStatus.OK);
+  });
+
+
 });
