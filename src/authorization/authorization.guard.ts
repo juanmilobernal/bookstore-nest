@@ -1,17 +1,18 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { expressJwtSecret, GetVerificationKey } from 'jwks-rsa';
 import { promisify } from 'util';
-import { expressjwt } from "express-jwt";
+import { expressjwt } from 'express-jwt';
 import { ConfigService } from '@nestjs/config';
-
-
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
-  
   private AUTH0_AUDIENCE: string;
   private AUTH0_DOMAIN: string;
-
 
   constructor(private configService: ConfigService) {
     this.AUTH0_AUDIENCE = this.configService.get('AUTH0_AUDIENCE');
